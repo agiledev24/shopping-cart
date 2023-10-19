@@ -3,6 +3,7 @@ import AppRoutes from "./routes";
 import "./App.css";
 import { AuthProvider } from "@view/contexts/AuthContext";
 import { ProductsProvider } from "@view/contexts/ProductsContext";
+import { Toaster } from "react-hot-toast";
 
 const App = () => {
   return (
@@ -10,6 +11,7 @@ const App = () => {
       <AuthProvider>
         <ProductsProvider>
           <AppRoutes />
+          <Toaster />
         </ProductsProvider>
       </AuthProvider>
     </BrowserRouter>

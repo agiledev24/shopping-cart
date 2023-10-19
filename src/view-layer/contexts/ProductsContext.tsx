@@ -7,6 +7,7 @@ import {
 } from "react";
 import useProducts from "@data/hooks/useProducts";
 import Product from "@data/models/product";
+import toast from 'react-hot-toast';
 
 const ProductsContext = createContext<
   | {
@@ -29,7 +30,9 @@ export const ProductsProvider = ({ children }: PropsWithChildren) => {
     (id: string) => {
       if (carts.includes(id)) {
         setCarts(carts.filter((_id) => _id !== id));
+        toast.success('Successfully removed from cart!');
       } else {
+        toast.success('Successfully added to cart!');
         setCarts([...carts, id]);
       }
     },

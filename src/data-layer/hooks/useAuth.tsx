@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import useAsyncAction from "./useAsyncAction";
 import User, { UserWithCredentials } from "@data/models/user";
+import toast from 'react-hot-toast';
 
 export const useAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<
@@ -29,6 +30,7 @@ export const useAuth = () => {
       });
       const data = await response.json();
       if (!data?.user) {
+        toast.error("Incorrect credentials");
         throw new Error("user does not exist");
       }
       return data.user as User;
