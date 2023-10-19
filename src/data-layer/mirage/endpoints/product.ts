@@ -43,4 +43,15 @@ export function routesForProducts(server: Server) {
       ? new Response(200, {}, { data: product })
       : new Response(404, {}, { errors: ["content does not exist"] });
   });
+
+  server.post(`/products`, (schema: AppSchema, request) => {
+    const { ids } = JSON.parse(request.requestBody);
+    const products = schema.all("product");
+
+    const items = products.models.filter((product) => ids.includes(product.id));
+
+    return items
+      ? new Response(200, {}, { items })
+      : new Response(404, {}, { errors: ["items do not exist"] });
+  });
 }

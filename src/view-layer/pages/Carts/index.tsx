@@ -1,16 +1,39 @@
 import { withPrivateRoute } from "@components/PrivateRoute";
+import useAsyncAction from "@data/hooks/useAsyncAction";
 import ProductItem from "@view/components/ProductItem";
 import { useProductsContext } from "@view/contexts/ProductsContext";
 import { withMainLayout } from "@view/layouts/MainLayout";
+import { useCallback, useEffect } from "react";
+import Loading from "../Loading";
 
 const Carts = () => {
-  const { items, carts } = useProductsContext();
-  const cartItems = items?.filter((item) => carts.includes(item.id));
-  console.log("cartItems", cartItems);
+  const { carts } = useProductsContext();
+  const [fetchCarts, isLoading, { data: items }] = useAsyncAction<any, any>(
+    useCallback(async () => {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_BASE}/products`,
+        {
+          method: "POST",
+          body: JSON.stringify({ ids: carts }),
+        }
+      );
+      const data = await response.json();
+      return data.items;
+    }, [carts])
+  );
+
+  useEffect(() => {
+    fetchCarts();
+  }, [fetchCarts, carts]);
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
   return (
     <div className="w-fit mx-auto grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 justify-items-center justify-center gap-y-20 gap-x-14 mt-10 mb-5">
-      {(cartItems?.length || 0) > 0 ? (
-        cartItems?.map((item) => <ProductItem item={item} />)
+      {(items?.length || 0) > 0 ? (
+        items?.map((item) => <ProductItem item={item} />)
       ) : (
         <p className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl">
           No Items
