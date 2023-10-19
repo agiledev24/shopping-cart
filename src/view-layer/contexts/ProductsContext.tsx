@@ -7,7 +7,10 @@ import {
 } from "react";
 import useProducts from "@data/hooks/useProducts";
 import Product from "@data/models/product";
-import toast from 'react-hot-toast';
+import toast from "react-hot-toast";
+import useProductsFilter, {
+  ProductsFilterMeta,
+} from "@data/hooks/useProductsFilter";
 
 const ProductsContext = createContext<
   | {
@@ -18,21 +21,23 @@ const ProductsContext = createContext<
       hasMore: boolean;
       updateCart: (id: string) => void;
       carts: Array<string>;
+      filterMeta: ProductsFilterMeta;
     }
   | undefined
 >(undefined);
 
 export const ProductsProvider = ({ children }: PropsWithChildren) => {
   const [carts, setCarts] = useState<Array<string>>([]);
-  const value = useProducts();
+  const [filterMeta, filters] = useProductsFilter();
+  const value = useProducts(filters);
 
   const updateCart = useCallback(
     (id: string) => {
       if (carts.includes(id)) {
         setCarts(carts.filter((_id) => _id !== id));
-        toast.success('Successfully removed from cart!');
+        toast.success("Successfully removed from cart!");
       } else {
-        toast.success('Successfully added to cart!');
+        toast.success("Successfully added to cart!");
         setCarts([...carts, id]);
       }
     },
@@ -45,6 +50,7 @@ export const ProductsProvider = ({ children }: PropsWithChildren) => {
         ...value,
         carts,
         updateCart,
+        filterMeta,
       }}
     >
       {children}

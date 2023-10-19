@@ -3,11 +3,25 @@ import { AppSchema } from "../types";
 
 export function routesForProducts(server: Server) {
   server.get(`/products`, (schema: AppSchema, request) => {
-    const { page, size } = request.queryParams;
+    const { page, size, q } = request.queryParams;
     const products = schema.all("product");
 
     const _page = page ? parseInt(page) : 0;
     const _size = size ? parseInt(size) : 20;
+
+    const availableData = products.models.filter((product) => {
+      if (q) {
+        const keyword = q.toLocaleLowerCase();
+        return (
+          product.department.toLocaleLowerCase().includes(keyword) ||
+          product.description.toLocaleLowerCase().includes(keyword) ||
+          product.name.toLocaleLowerCase().includes(keyword)
+        );
+      }
+      return true;
+    });
+
+    const data = availableData.slice(_page * _size, (_page + 1) * _size);
 
     return new Response(
       200,
@@ -15,8 +29,8 @@ export function routesForProducts(server: Server) {
       {
         page,
         size,
-        total: products.length,
-        items: products.models.slice(_page * _size, (_page + 1) * _size),
+        total: availableData.length,
+        items: data,
       }
     );
   });
