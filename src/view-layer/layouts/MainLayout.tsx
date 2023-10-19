@@ -11,7 +11,7 @@ const MainLayout = ({ children }: PropsWithChildren) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
-  const showSearchBox = pathname === "/products";
+  const showSearchBox = pathname === "/products" || pathname === "/";
 
   return (
     <section className="">

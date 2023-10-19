@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Loading from "../Loading";
 import { useProductsContext } from "@view/contexts/ProductsContext";
+import { Products } from "@data/api/services/products";
 
 const Product = () => {
   const { id } = useParams();
@@ -13,10 +14,7 @@ const Product = () => {
 
   const [fetchProduct, isLoading, { data: product, error }] = useAsyncAction(
     useCallback(async () => {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_BASE}/products/${id}`
-      );
-      const product = await response.json();
+      const product = await Products.get(id);
       if (!product?.data) {
         throw new Error("content does not exist");
       }

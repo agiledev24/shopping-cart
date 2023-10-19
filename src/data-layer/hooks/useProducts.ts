@@ -3,6 +3,7 @@ import { useCallback, useEffect, useReducer, useRef } from "react";
 import { isEqual } from "lodash";
 import useAsyncAction from "./useAsyncAction";
 import { ProductsFilters } from "./useProductsFilter";
+import { Products } from "@data/api/services/products";
 
 type State = {
   items: Array<Product> | null;
@@ -65,13 +66,7 @@ export default function useProducts(filters: ProductsFilters, pageSize = 18) {
   const [fetchList, loading, { error }] = useAsyncAction<any, any>(
     useCallback(
       async (filters: ProductsFilters, page: number) => {
-        let apiURL = `${process.env.REACT_APP_API_BASE}/products?page=${page}&size=${pageSize}`;
-        if (filters.keyword) {
-          apiURL += `&q=${filters.keyword}`;
-        }
-        const response = await fetch(apiURL);
-        const data = await response.json();
-        return data;
+        return await Products.list(page, pageSize, filters.keyword);
       },
       [pageSize]
     ),

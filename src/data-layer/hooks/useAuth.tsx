@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import useAsyncAction from "./useAsyncAction";
 import User, { UserWithCredentials } from "@data/models/user";
-import toast from 'react-hot-toast';
+import toast from "react-hot-toast";
+import { Users } from "@data/api/services/users";
 
 export const useAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<
@@ -24,16 +25,12 @@ export const useAuth = () => {
     [email: string, password: string]
   >(
     useCallback(async (email, password) => {
-      const response = await fetch(`${process.env.REACT_APP_API_BASE}/signin`, {
-        method: "POST",
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await response.json();
-      if (!data?.user) {
+      const user = await Users.signIn(email, password);
+      if (!user) {
         toast.error("Incorrect credentials");
         throw new Error("user does not exist");
       }
-      return data.user as User;
+      return user as User;
     }, []),
     useCallback((user: User) => {
       setUser(user);

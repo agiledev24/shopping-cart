@@ -5,20 +5,13 @@ import { useProductsContext } from "@view/contexts/ProductsContext";
 import { withMainLayout } from "@view/layouts/MainLayout";
 import { useCallback, useEffect } from "react";
 import Loading from "../Loading";
+import { Products } from "@data/api/services/products";
 
 const Carts = () => {
   const { carts } = useProductsContext();
   const [fetchCarts, isLoading, { data: items }] = useAsyncAction<any, any>(
     useCallback(async () => {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_BASE}/products`,
-        {
-          method: "POST",
-          body: JSON.stringify({ ids: carts }),
-        }
-      );
-      const data = await response.json();
-      return data.items;
+      return await Products.carts(carts);
     }, [carts])
   );
 
